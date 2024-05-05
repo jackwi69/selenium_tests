@@ -15,7 +15,7 @@ import time
 # ### install: webdriver-manager 4.0.1 ### pip install webdriver-manager
 driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()))
 
-webDrrWt = WebDriverWait(driver, 10,
+webDrrWt = WebDriverWait(driver, 10, poll_frequency=2,
                          ignored_exceptions=[NoSuchElementException,
                                              ElementNotVisibleException,
                                              ElementNotSelectableException,
