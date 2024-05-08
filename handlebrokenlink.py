@@ -1,5 +1,7 @@
+import requests
 from selenium import webdriver
-from selenium.common import NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException
+from selenium.common import (NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException, \
+    TimeoutException)
 from selenium.webdriver.chrome.service import Service as ChromiumService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,7 +11,7 @@ from webdriver_manager.core.os_manager import ChromeType
 import time
 
 
-""" t-6 """
+""" Session-7 """
 
 # https://pypi.org/project/webdriver-manager/
 # ### install: webdriver-manager 4.0.1 ### pip install webdriver-manager
@@ -20,20 +22,26 @@ webDrrWt = WebDriverWait(driver, 10, poll_frequency=2,
                          ignored_exceptions=[NoSuchElementException,
                                              ElementNotVisibleException,
                                              ElementNotSelectableException,
+                                             TimeoutException,
                                              Exception]
                          )
+driver.get("http://www.deadlinkcity.com/")
 
-driver.get("https://google.com")
-time.sleep(3)
+badlinks = driver.find_elements(By.TAG_NAME,"a")
+count=0
 
-search_box = driver.find_element(By.NAME, 'q')
-search_box.send_keys("Selenium")
-search_box.submit()
+for link in badlinks:
+    url = link.get_attribute('href')
+    try:
+        res = requests.head(url)
+    except:
+        None
 
-# Ok, must bi added 1 tuples mor: element_located((By. ...)))
-# search_link = webDrrWt.until(EC.presence_of_element_located((By.XPATH, "//h3[text()='Selenium']")))
-# Ok, must bi added 1 tuples mor: element_located((By. ...)))
-search_link = webDrrWt.until(EC.presence_of_element_located((By.XPATH, "//h3[normalize-space()='Selenium']")))
-search_link.click()
+    if res.status_code>=400:
+        print(url , ' is broken link')
+        count += 1
+    else:
+        print(url, ' is valid link')
 
+print('total number broken of links: ', count)
 driver.close()
